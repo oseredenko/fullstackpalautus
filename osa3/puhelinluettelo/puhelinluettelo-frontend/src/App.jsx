@@ -62,8 +62,9 @@ const App = () => {
         setNewNumber('')
         showMessage(`Added ${returnedPerson.name}`)
       })
-      .catch(() => {
-        showMessage(`Failed to add ${personObject.name}`, true)
+      .catch(error => {
+         const errorMessage = error.response?.data?.error
+         showMessage(errorMessage || `Failed to add ${personObject.name}`, true)
       })
   }
 
