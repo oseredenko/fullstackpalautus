@@ -5,7 +5,11 @@ const Person = require('./models/person')
 const app = express()
 
 const url = process.env.MONGODB_URI
-console.log('connecting to', url)
+console.log('Connecting to', url)
+
+mongoose.connect(url)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.log('Error connecting to MongoDB:', error.message))
 
 app.use(express.static('dist'))
 app.use(express.json())
@@ -33,7 +37,7 @@ app.post('/api/persons', (request, response, next) => {
   console.log('Incoming POST body:', body)
 
   if (!body.name || !body.number) {
-    return response.status(400).json({ error: 'name or number missing' })
+    return response.status(400).json({ error: 'Name or number missing' })
   }
 
   const person = new Person({
@@ -69,15 +73,12 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  console.log('Deleting id:', id)
 
   Person.findByIdAndDelete(id)
     .then(result => {
       if (result) {
-        console.log('Deleted:', result)
         response.status(204).end()
       } else {
-        console.log('Not found')
         response.status(404).end()
       }
     })
@@ -102,7 +103,7 @@ const errorHandler = (error, request, response, next) => {
 }
 app.use(errorHandler)
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
